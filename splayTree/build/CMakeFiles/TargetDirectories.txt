@@ -1,0 +1,3 @@
+/home/nikozer/univercity_tasks/graphsAlgos/splayTree/build/CMakeFiles/SplayTree.dir
+/home/nikozer/univercity_tasks/graphsAlgos/splayTree/build/CMakeFiles/edit_cache.dir
+/home/nikozer/univercity_tasks/graphsAlgos/splayTree/build/CMakeFiles/rebuild_cache.dir
