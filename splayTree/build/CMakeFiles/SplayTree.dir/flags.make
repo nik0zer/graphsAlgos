@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/home/nikozer/univercity_tasks/graphsAlgos/splayTree/include
 
-CXX_FLAGS = -g -std=gnu++20
+CXX_FLAGS =  -g -fsanitize=address -g -std=gnu++20
 

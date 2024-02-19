@@ -1,1 +1,1 @@
-/usr/bin/g++ -g CMakeFiles/SplayTree.dir/src/main.cpp.o -o SplayTree 
+/usr/bin/g++  -g -fsanitize=address -g CMakeFiles/SplayTree.dir/src/main.cpp.o -o SplayTree 

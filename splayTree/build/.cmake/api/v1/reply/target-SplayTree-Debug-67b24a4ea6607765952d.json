@@ -42,7 +42,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "-g"
+					"fragment" : " -g -fsanitize=address -g"
 				},
 				{
 					"fragment" : "-std=gnu++20"
@@ -76,7 +76,7 @@
 		"commandFragments" : 
 		[
 			{
-				"fragment" : "-g",
+				"fragment" : "-g -fsanitize=address -g",
 				"role" : "flags"
 			},
 			{

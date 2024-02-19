@@ -4,7 +4,14 @@
 int main()
 {
     SplayTree::Tree<int>* tree = new SplayTree::Tree<int>();
-    tree->Insert(1);
-    std::cout << tree->GetRoot()->GetData() << std::endl;
-    std::cout << tree->GetRoot()->RightRotate()->GetData() << std::endl;;
+    tree->TestInsert(1);
+    tree->TestInsert(-1);
+    tree->TestInsert(-2);
+    tree->TestInsert(0);
+    tree->TestInsert(2);
+    tree->GetRoot()->PrintPreOrderDFS();
+    std::shared_ptr<SplayTree::Node<int>> new_root = tree->GetRoot()->RightRotate();
+    std::cout << std::endl;
+    new_root->PrintPreOrderDFS();
+    delete tree;
 }
