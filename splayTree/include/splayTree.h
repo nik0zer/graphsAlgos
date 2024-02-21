@@ -50,34 +50,40 @@ namespace SplayTree
             Zig();
             return;
         }
-        if((_predessor_node->_left_node == shared_from_this() &&
+        if((_predessor_node.lock()->_left_node == shared_from_this() &&
         _predessor_node.lock()->_predessor_node.lock()->_left_node == _predessor_node.lock()) || 
-        (_predessor_node->_right_node == shared_from_this() &&
+        (_predessor_node.lock()->_right_node == shared_from_this() &&
         _predessor_node.lock()->_predessor_node.lock()->_right_node == _predessor_node.lock()))
         {
             ZigZig();
         }
         else
         {
+            std::cout << "BBBBBB" <<std::endl;
             ZigZag();
         }
+        std::cout << "AAAAA" <<std::endl;
         if(_predessor_node.lock() == nullptr)
         {
             return;
         }
+        PrintPreOrderDFS();
+        std::cout << std::endl;
+        _predessor_node.lock()->PrintPreOrderDFS();
+        return;
         Splay();
     }
 
     template <typename T> void Node<T>::ZigZig()
     {
-        EdgeRotate(_predessor_node.lock()->_predessor_node, _predessor_node);
-        EdgeRotate(_predessor_node, shared_from_this());
+        EdgeRotate(_predessor_node.lock()->_predessor_node.lock(), _predessor_node.lock());
+        EdgeRotate(_predessor_node.lock(), shared_from_this());
     }
 
     template <typename T> void Node<T>::ZigZag()
     {
-        EdgeRotate(_predessor_node, shared_from_this());
-        EdgeRotate(_predessor_node, shared_from_this());
+        EdgeRotate(_predessor_node.lock(), shared_from_this());
+        EdgeRotate(_predessor_node.lock(), shared_from_this());
     }
 
     template <typename T> void Node<T>::Zig()
@@ -106,7 +112,10 @@ namespace SplayTree
         new_root_node->_predessor_node = _predessor_node;
         _predessor_node = new_root_node;
         _right_node = temp;
-        temp->_predessor_node = shared_from_this();
+        if(temp != nullptr)
+        {
+            temp->_predessor_node = shared_from_this();
+        }
         return new_root_node;
     }
 
@@ -122,7 +131,10 @@ namespace SplayTree
         new_root_node->_predessor_node = _predessor_node;
         _predessor_node = new_root_node;
         _left_node = temp;
-        temp->_predessor_node = shared_from_this();
+        if(temp != nullptr)
+        {
+            temp->_predessor_node = shared_from_this();
+        }
         return new_root_node;
     }
 
