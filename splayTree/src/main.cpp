@@ -1,22 +1,26 @@
 #include <iostream>
 #include "splayTree.h"
 
+
 int main()
 {
+    std::ofstream fout("1.txt");
     SplayTree::Tree<int>* tree = new SplayTree::Tree<int>();
+    tree->TestInsert(3);
     tree->TestInsert(1);
-    tree->TestInsert(-1);
-    tree->TestInsert(-2);
-    tree->TestInsert(0);
     tree->TestInsert(2);
-    tree->GetRoot()->PrintPreOrderDFS();
-    std::shared_ptr<SplayTree::Node<int>> new_root = tree->GetRoot()->RightRotate();
-    std::cout<<std::endl;
-    new_root->PrintPreOrderDFS();
-    std::cout<<std::endl;
-    auto new_new_root = new_root->_right_node->_left_node;
-    new_new_root->Splay();
-    std::cout<<"AAAAA"<<std::endl;
-    // new_new_root->PrintPreOrderDFS();
+    tree->TestInsert(0);
+    tree->TestInsert(5);
+    tree->TestInsert(6);
+    tree->TestInsert(4);
+    tree->GetRoot()->GraphvizPrintStart(fout, "aa");
+    fout<<std::endl;
+    std::ofstream fout1("2.txt");
+    auto new_root = tree->GetRoot()->_left_node;
+    new_root->LeftRotate();
+    tree->GetRoot()->GraphvizPrintStart(fout1, "bb");
+    fout1<<std::endl;
+    fout.close();
+    fout1.close();
     delete tree;
 }
