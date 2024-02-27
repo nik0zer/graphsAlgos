@@ -13,9 +13,9 @@ namespace SplayTree
             std::shared_ptr<Node<T>> _left_node;
             std::shared_ptr<Node<T>> _right_node;
             std::weak_ptr<Node<T>> _predessor_node;
-            void Zig();
-            void ZigZig();
-            void ZigZag();
+            void Zig(std::shared_ptr<Node<T>>& root);
+            void ZigZig(std::shared_ptr<Node<T>>& root);
+            void ZigZag(std::shared_ptr<Node<T>>& root);
             
         public:
             T GetData();
@@ -23,26 +23,41 @@ namespace SplayTree
             void TestInsert(T data);
             std::shared_ptr<Node<T>> RightRotate();
             std::shared_ptr<Node<T>> LeftRotate();
-            void EdgeRotate(std::shared_ptr<Node<T>> predessor, std::shared_ptr<Node<T>> rotate_node);
-            void Splay();
+            void EdgeRotate(std::shared_ptr<Node<T>> predessor, std::shared_ptr<Node<T>> rotate_node, std::shared_ptr<Node<T>>& root);
+            void Splay(std::shared_ptr<Node<T>>& root);
             void PrintPreOrderDFS(std::ofstream& out);
             void GraphvizPrintStart(std::ofstream& out, std::string name);
             void GraphvizPrint(std::ofstream& out);
     };
 
-    template <typename T> void Node<T>::EdgeRotate(std::shared_ptr<Node<T>> predessor, std::shared_ptr<Node<T>> rotate_node)
+    template <typename T> void Node<T>::EdgeRotate(std::shared_ptr<Node<T>> predessor, std::shared_ptr<Node<T>> rotate_node,
+     std::shared_ptr<Node<T>>& root)
     {
         if(predessor->_left_node == rotate_node)
         {
-            predessor->RightRotate();
+            if(predessor == root)
+            {
+                root = predessor->RightRotate();
+            }
+            else
+            {
+                predessor->RightRotate();
+            }
         }
         else
         {
-            predessor->LeftRotate();
+            if(predessor == root)
+            {
+                root = predessor->LeftRotate();
+            }
+            else
+            {
+                predessor->LeftRotate();
+            }
         }
     }
 
-    template <typename T> void Node<T>::Splay()
+    template <typename T> void Node<T>::Splay(std::shared_ptr<Node<T>>& root)
     {
         if(_predessor_node.lock() == nullptr)
         {
@@ -50,7 +65,7 @@ namespace SplayTree
         }
         if(_predessor_node.lock()->_predessor_node.lock() == nullptr)
         {
-            Zig();
+            Zig(root);
             return;
         }
         if((_predessor_node.lock()->_left_node == shared_from_this() &&
@@ -58,35 +73,35 @@ namespace SplayTree
         (_predessor_node.lock()->_right_node == shared_from_this() &&
         _predessor_node.lock()->_predessor_node.lock()->_right_node == _predessor_node.lock()))
         {
-            ZigZig();
+            ZigZig(root);
         }
         else
         {
-            ZigZag();
+            ZigZag(root);
         }
         if(_predessor_node.lock() == nullptr)
         {
             return;
         }
-        Splay();
+        Splay(root);
     }
 
-    template <typename T> void Node<T>::ZigZig()
+    template <typename T> void Node<T>::ZigZig(std::shared_ptr<Node<T>>& root)
     {
-        EdgeRotate(_predessor_node.lock()->_predessor_node.lock(), _predessor_node.lock());
-
-        EdgeRotate(_predessor_node.lock(), shared_from_this());
+        
+        EdgeRotate(_predessor_node.lock()->_predessor_node.lock(), _predessor_node.lock(), root);
+        EdgeRotate(_predessor_node.lock(), shared_from_this(), root);
     }
 
-    template <typename T> void Node<T>::ZigZag()
+    template <typename T> void Node<T>::ZigZag(std::shared_ptr<Node<T>>& root)
     {
-        EdgeRotate(_predessor_node.lock(), shared_from_this());
-        EdgeRotate(_predessor_node.lock(), shared_from_this());
+        EdgeRotate(_predessor_node.lock(), shared_from_this(), root);
+        EdgeRotate(_predessor_node.lock(), shared_from_this(), root);
     }
 
-    template <typename T> void Node<T>::Zig()
+    template <typename T> void Node<T>::Zig(std::shared_ptr<Node<T>>& root)
     {
-        EdgeRotate(_predessor_node.lock(), shared_from_this());
+        EdgeRotate(_predessor_node.lock(), shared_from_this(), root);
     }
 
     template <typename T> void Node<T>::PrintPreOrderDFS(std::ofstream& out)
@@ -155,9 +170,9 @@ namespace SplayTree
         new_root_node->_predessor_node = _predessor_node;
         _predessor_node = new_root_node;
         _right_node = temp;
-        if(temp != nullptr)
+        if(_right_node != nullptr)
         {
-            temp->_predessor_node = shared_from_this();
+            _right_node->_predessor_node = shared_from_this();
         }
         return new_root_node;
     }
@@ -228,7 +243,7 @@ namespace SplayTree
     template <typename T> 
     class Tree
     {
-    private:
+    public:
         std::shared_ptr<Node<T>> _root_node;
     public:
         std::shared_ptr<Node<T>> GetRoot();

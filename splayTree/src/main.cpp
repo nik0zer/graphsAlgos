@@ -16,9 +16,9 @@ int main()
     tree->GetRoot()->GraphvizPrintStart(fout, "aa");
     fout<<std::endl;
     std::ofstream fout1("2.txt");
-    auto new_root = tree->GetRoot()->_left_node;
-    new_root->LeftRotate();
-    tree->GetRoot()->GraphvizPrintStart(fout1, "bb");
+    auto new_root = tree->GetRoot()->_right_node->_left_node;
+    new_root->Splay(tree->_root_node);
+    new_root->GraphvizPrintStart(fout1, "bb");
     fout1<<std::endl;
     fout.close();
     fout1.close();
