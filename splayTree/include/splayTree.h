@@ -286,8 +286,18 @@ namespace SplayTree
         std::shared_ptr<Node<T>> Find(T data);
         static std::shared_ptr<Node<T>> Merge(std::shared_ptr<Node<T>> root1, std::shared_ptr<Node<T>> root2);
         std::pair<std::shared_ptr<Node<T>>, std::shared_ptr<Node<T>>> Split(T data);
-        
+        void Delete(T data);
     };
+
+    template <typename T> void Tree<T>::Delete(T data)
+    {
+        auto delete_elem = Find(data);
+        if(delete_elem == nullptr)
+        {
+            return;
+        }
+        _root_node = Merge(delete_elem->_left_node, delete_elem->_right_node);
+    }
 
     template <typename T> void Tree<T>::Insert(T data)
     {
