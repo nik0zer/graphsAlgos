@@ -1,16 +1,16 @@
 digraph bb{
-v4 [label = "4"];
-v3 [label = "3"];
-v4->v3
-v1 [label = "1"];
-v3->v1
-v0 [label = "0"];
-v1->v0
-v2 [label = "2"];
-v1->v2
-v5 [label = "5"];
-v4->v5
-v6 [label = "6"];
-v5->v6
+v14 [label = "14"];
+v13 [label = "13"];
+v14->v13
+v11 [label = "11"];
+v13->v11
+v10 [label = "10"];
+v11->v10
+v12 [label = "12"];
+v11->v12
+v15 [label = "15"];
+v14->v15
+v16 [label = "16"];
+v15->v16
 }
 

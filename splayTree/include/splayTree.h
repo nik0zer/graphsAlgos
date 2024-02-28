@@ -25,6 +25,7 @@ namespace SplayTree
             void Splay(std::shared_ptr<Node<T>>& root);
             std::shared_ptr<Node<T>> FindNode(T data);
             Node(T data);
+            std::shared_ptr<Node<T>> FindMax();
             
         public:
             T GetData();
@@ -32,6 +33,15 @@ namespace SplayTree
             void GraphvizPrintStart(std::ofstream& out, std::string name);
             void GraphvizPrint(std::ofstream& out);
     };
+
+    template <typename T> std::shared_ptr<Node<T>> Node<T>::FindMax()
+    {
+        if(_right_node == nullptr)
+        {
+            return shared_from_this();
+        }
+        return _right_node->FindMax();
+    }
 
     template <typename T> std::shared_ptr<Node<T>> Node<T>::FindNode(T data)
     {
@@ -272,14 +282,38 @@ namespace SplayTree
     template <typename T> 
     class Tree
     {
-    public:
+    private:
         std::shared_ptr<Node<T>> _root_node;
     public:
+        void SetRoot(std::shared_ptr<Node<T>> root);
         std::shared_ptr<Node<T>> GetRoot();
         Tree();
         void TestInsert(T data);
         std::shared_ptr<Node<T>> Find(T data);
+        static std::shared_ptr<Node<T>> Merge(std::shared_ptr<Node<T>> root1, std::shared_ptr<Node<T>> root2);
     };
+
+    template <typename T> void Tree<T>::SetRoot(std::shared_ptr<Node<T>> root)
+    {
+        _root_node = root;
+    }
+
+    template <typename T> std::shared_ptr<Node<T>> Tree<T>::Merge(std::shared_ptr<Node<T>> root1, std::shared_ptr<Node<T>> root2)
+    {
+        if(root1 == nullptr)
+        {
+            return root2;
+        }
+        if(root2 == nullptr)
+        {
+            return root1;
+        }
+        auto tree1_max_node = root1->FindMax();
+        tree1_max_node->Splay(root1);
+        tree1_max_node->_right_node = root2;
+        root2->_predessor_node = tree1_max_node;
+        return tree1_max_node;
+    }
 
     template <typename T> std::shared_ptr<Node<T>> Tree<T>::Find(T data)
     {
@@ -295,6 +329,7 @@ namespace SplayTree
     {
         _root_node = nullptr;
     }
+
     template <typename T> void Tree<T>::TestInsert(T data)
     {
         if(_root_node != nullptr)
