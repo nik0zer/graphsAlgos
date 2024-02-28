@@ -1,3 +1,0 @@
-digraph bb{
-v17 [label = "17"];
-}

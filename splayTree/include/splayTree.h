@@ -18,7 +18,6 @@ namespace SplayTree
             void Zig(std::shared_ptr<Node<T>>& root);
             void ZigZig(std::shared_ptr<Node<T>>& root);
             void ZigZag(std::shared_ptr<Node<T>>& root);
-            void TestInsert(T data);
             std::shared_ptr<Node<T>> RightRotate();
             std::shared_ptr<Node<T>> LeftRotate();
             void EdgeRotate(std::shared_ptr<Node<T>> predessor, std::shared_ptr<Node<T>> rotate_node, std::shared_ptr<Node<T>>& root);
@@ -268,29 +267,7 @@ namespace SplayTree
         _data = data;
         _predessor_node = std::weak_ptr<Node<T>>();
     }
-    template <typename T> void Node<T>::TestInsert(T data)
-    {
-        if(data <= _data)
-        {
-            if(_left_node != nullptr)
-            {
-                _left_node->TestInsert(data);
-                return;
-            }
-            _left_node = std::shared_ptr<Node<T>>(new Node<T>(data));
-            _left_node->_predessor_node = shared_from_this();
-        }
-        else
-        {
-            if(_right_node != nullptr)
-            {
-                _right_node->TestInsert(data);
-                return;
-            }
-            _right_node = std::shared_ptr<Node<T>>(new Node<T>(data));
-            _right_node->_predessor_node = shared_from_this();
-        }
-    }
+
     template <typename T> T Node<T>::GetData()
     {
         return _data;
@@ -305,15 +282,35 @@ namespace SplayTree
         void SetRoot(std::shared_ptr<Node<T>> root);
         std::shared_ptr<Node<T>> GetRoot();
         Tree();
-        void TestInsert(T data);
+        void Insert(T data);
         std::shared_ptr<Node<T>> Find(T data);
         static std::shared_ptr<Node<T>> Merge(std::shared_ptr<Node<T>> root1, std::shared_ptr<Node<T>> root2);
         std::pair<std::shared_ptr<Node<T>>, std::shared_ptr<Node<T>>> Split(T data);
         
     };
 
+    template <typename T> void Tree<T>::Insert(T data)
+    {
+        auto split_trees = Split(data);
+        _root_node = std::shared_ptr<Node<T>>(new Node(data));
+        _root_node->_left_node = split_trees.first;
+        _root_node->_right_node = split_trees.second;
+        if(_root_node->_left_node != nullptr)
+        {
+            _root_node->_left_node->_predessor_node = _root_node;
+        }
+        if(_root_node->_right_node != nullptr)
+        {
+            _root_node->_right_node->_predessor_node = _root_node;
+        }
+    }
+
     template <typename T> std::pair<std::shared_ptr<Node<T>>, std::shared_ptr<Node<T>>> Tree<T>::Split(T data)
     {
+        if(_root_node == nullptr)
+        {
+            return std::pair<std::shared_ptr<Node<T>>, std::shared_ptr<Node<T>>>(nullptr, nullptr);
+        }
         auto next_node = _root_node->FindNext(data);
         next_node->Splay(_root_node);
         if(_root_node->_data <= data)
@@ -322,7 +319,10 @@ namespace SplayTree
         }
         auto less_tree = _root_node->_left_node;
         _root_node->_left_node = nullptr;
-        less_tree->_predessor_node = std::weak_ptr<Node<T>>();
+        if(less_tree != nullptr)
+        {
+            less_tree->_predessor_node = std::weak_ptr<Node<T>>();
+        }
         return std::pair<std::shared_ptr<Node<T>>, std::shared_ptr<Node<T>>>(less_tree, _root_node);
     }
 
@@ -363,17 +363,6 @@ namespace SplayTree
         _root_node = nullptr;
     }
 
-    template <typename T> void Tree<T>::TestInsert(T data)
-    {
-        if(_root_node != nullptr)
-        {
-            _root_node->TestInsert(data);
-        }
-        else
-        {
-            _root_node = std::shared_ptr<Node<T>>(new Node<T>(data));
-        }
-    }
     template <typename T> std::shared_ptr<Node<T>> Tree<T>::GetRoot()
     {
         return _root_node;
