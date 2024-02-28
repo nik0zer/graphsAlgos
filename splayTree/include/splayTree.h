@@ -8,6 +8,8 @@ namespace SplayTree
     class Node : public std::enable_shared_from_this<Node<T>>
     {
         using std::enable_shared_from_this<Node<T>>::shared_from_this;
+        template <typename U> friend class Tree;
+        
         public:
             T _data;
             std::shared_ptr<Node<T>> _left_node;
@@ -16,19 +18,50 @@ namespace SplayTree
             void Zig(std::shared_ptr<Node<T>>& root);
             void ZigZig(std::shared_ptr<Node<T>>& root);
             void ZigZag(std::shared_ptr<Node<T>>& root);
-            
-        public:
-            T GetData();
-            Node(T data);
             void TestInsert(T data);
             std::shared_ptr<Node<T>> RightRotate();
             std::shared_ptr<Node<T>> LeftRotate();
             void EdgeRotate(std::shared_ptr<Node<T>> predessor, std::shared_ptr<Node<T>> rotate_node, std::shared_ptr<Node<T>>& root);
             void Splay(std::shared_ptr<Node<T>>& root);
+            std::shared_ptr<Node<T>> FindNode(T data);
+            Node(T data);
+            
+        public:
+            T GetData();
             void PrintPreOrderDFS(std::ofstream& out);
             void GraphvizPrintStart(std::ofstream& out, std::string name);
             void GraphvizPrint(std::ofstream& out);
     };
+
+    template <typename T> std::shared_ptr<Node<T>> Node<T>::FindNode(T data)
+    {
+        if(data == _data)
+        {
+            return shared_from_this();
+        }
+        if(data <= _data)
+        {
+            if(_left_node == nullptr)
+            {
+                return nullptr;
+            }
+            else
+            {
+                return _left_node->FindNode(data);
+            }
+        }
+        else
+        {
+            if(_right_node == nullptr)
+            {
+                return nullptr;
+            }
+            else
+            {
+                return _right_node->FindNode(data);
+            }
+        }
+    }
 
     template <typename T> void Node<T>::EdgeRotate(std::shared_ptr<Node<T>> predessor, std::shared_ptr<Node<T>> rotate_node,
      std::shared_ptr<Node<T>>& root)
@@ -78,10 +111,6 @@ namespace SplayTree
         else
         {
             ZigZag(root);
-        }
-        if(_predessor_node.lock() == nullptr)
-        {
-            return;
         }
         Splay(root);
     }
@@ -249,7 +278,18 @@ namespace SplayTree
         std::shared_ptr<Node<T>> GetRoot();
         Tree();
         void TestInsert(T data);
+        std::shared_ptr<Node<T>> Find(T data);
     };
+
+    template <typename T> std::shared_ptr<Node<T>> Tree<T>::Find(T data)
+    {
+        auto find_node = _root_node->FindNode(data);
+        if(find_node != nullptr)
+        {
+            find_node->Splay(_root_node);
+        }
+        return find_node;
+    }
 
     template <typename T> Tree<T>::Tree()
     {
