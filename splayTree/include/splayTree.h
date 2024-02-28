@@ -26,13 +26,30 @@ namespace SplayTree
             std::shared_ptr<Node<T>> FindNode(T data);
             Node(T data);
             std::shared_ptr<Node<T>> FindMax();
-            
+            std::shared_ptr<Node<T>> FindNext(T data);
         public:
             T GetData();
             void PrintPreOrderDFS(std::ofstream& out);
             void GraphvizPrintStart(std::ofstream& out, std::string name);
             void GraphvizPrint(std::ofstream& out);
     };
+
+    template <typename T> std::shared_ptr<Node<T>> Node<T>::FindNext(T data)
+    {
+        if(_data <= data)
+        {
+            if(_right_node == nullptr)
+            {
+                return shared_from_this();
+            }
+            return _right_node->FindNext(data);
+        }
+        if(_left_node == nullptr || _left_node->_data <= data)
+        {
+            return shared_from_this();
+        }
+        return _left_node->FindNext(data);
+    }
 
     template <typename T> std::shared_ptr<Node<T>> Node<T>::FindMax()
     {
@@ -291,7 +308,23 @@ namespace SplayTree
         void TestInsert(T data);
         std::shared_ptr<Node<T>> Find(T data);
         static std::shared_ptr<Node<T>> Merge(std::shared_ptr<Node<T>> root1, std::shared_ptr<Node<T>> root2);
+        std::pair<std::shared_ptr<Node<T>>, std::shared_ptr<Node<T>>> Split(T data);
+        
     };
+
+    template <typename T> std::pair<std::shared_ptr<Node<T>>, std::shared_ptr<Node<T>>> Tree<T>::Split(T data)
+    {
+        auto next_node = _root_node->FindNext(data);
+        next_node->Splay(_root_node);
+        if(_root_node->_data <= data)
+        {
+            return std::pair<std::shared_ptr<Node<T>>, std::shared_ptr<Node<T>>>(_root_node, nullptr);
+        }
+        auto less_tree = _root_node->_left_node;
+        _root_node->_left_node = nullptr;
+        less_tree->_predessor_node = std::weak_ptr<Node<T>>();
+        return std::pair<std::shared_ptr<Node<T>>, std::shared_ptr<Node<T>>>(less_tree, _root_node);
+    }
 
     template <typename T> void Tree<T>::SetRoot(std::shared_ptr<Node<T>> root)
     {
